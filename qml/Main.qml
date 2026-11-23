@@ -163,7 +163,7 @@ ApplicationWindow {
                 Button {
                     text: "×"; width: 38; height: 38; padding: 0
                     onClicked: win.requestClose()
-                    background: Rectangle { radius: 13; color: parent.hovered ? "#463d2847" : "#1825324b"; border.color: "#38536683" }
+                    background: Rectangle { radius: 12; color: parent.hovered ? "#463d2847" : "#1825324b"; border.color: "#38536683" }
                     contentItem: Text { text: parent.text; color: "#d6dced"; font.pixelSize: 25; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
             }
@@ -195,7 +195,9 @@ ApplicationWindow {
                         property real cardWidth: Math.max(138, Math.min(280, gallery.width * 0.28, cardHeight * 0.75))
                         width: cardWidth
                         height: cardHeight
-                        x: gallery.width / 2 - width / 2 + delta * width * 0.70
+                        // Keep enough horizontal separation for the scaled covers' labels.
+                        // The cards still overlap visually at the edges, preserving the cover-flow look.
+                        x: gallery.width / 2 - width / 2 + delta * width * 0.94
                         y: (gallery.height - height) / 2 + distance * 9 + 4
                         z: 20 - distance
                         scale: active ? 1.0 : (distance === 1 ? 0.83 : (distance === 2 ? 0.69 : 0.57))
@@ -233,7 +235,7 @@ ApplicationWindow {
                             anchors.fill: parent
                             radius: 23
                             color: card.modelData.palette.background
-                            border.width: card.active ? 1.5 : 1
+                            border.width: 1.5
                             border.color: card.active ? "#d18f9fcf" : "#555e7292"
                             clip: true
 
@@ -271,24 +273,13 @@ ApplicationWindow {
                             }
                             Column {
                                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                                anchors.margins: card.active ? 19 : 15
-                                spacing: 10
-                                Row {
-                                    spacing: 6
-                                    Repeater {
-                                        model: [card.modelData.palette.accent, card.modelData.palette.secondary, card.modelData.palette.tertiary, card.modelData.palette.text]
-                                        delegate: Rectangle {
-                                            required property string modelData
-                                            width: card.active ? 17 : 14; height: width; radius: width / 2
-                                            color: modelData; border.width: 1; border.color: "#80ffffff"
-                                        }
-                                    }
-                                }
+                                anchors.leftMargin: 17; anchors.rightMargin: 17
+                                anchors.bottomMargin: 16
                                 Text {
                                     width: parent.width
                                     text: card.modelData.name
                                     color: "#ffffff"
-                                    font.pixelSize: card.active ? 21 : 15
+                                    font.pixelSize: card.active ? 19 : 13
                                     font.weight: Font.DemiBold
                                     elide: Text.ElideRight
                                 }
@@ -317,18 +308,13 @@ ApplicationWindow {
                 }
             }
 
-            // One description, palette, and pagination row below the gallery.
+            // The selected cover already carries its name, so keep the lower row focused
+            // on description, palette, and pagination rather than repeating that heading.
             ColumnLayout {
                 visible: win.page === "gallery"
                 Layout.fillWidth: true
-                Layout.preferredHeight: 94
-                spacing: 5
-                Text {
-                    Layout.fillWidth: true
-                    text: visibleCount ? repo.themes[repo.selected].name : "No presets"
-                    color: "#f5f4fc"; font.pixelSize: 24; font.weight: Font.DemiBold
-                    horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
-                }
+                Layout.preferredHeight: 69
+                spacing: 4
                 Text {
                     Layout.fillWidth: true
                     text: visibleCount ? repo.themes[repo.selected].description : "Create or import a preset to get started."
@@ -366,11 +352,11 @@ ApplicationWindow {
                     Text { text: "YOUR PRESETS"; color: "#e8e9f3"; font.pixelSize: 19; font.weight: Font.DemiBold }
                     Item { Layout.fillWidth: true }
                     Button { text: "＋  New theme"; onClicked: { repo.createTheme(); edit = clone(repo.draft); page = "editor" }
-                        background: Rectangle { radius: 13; color: parent.hovered ? "#55415f83" : "#3a303f62"; border.color: "#788a83ad" }
+                        background: Rectangle { radius: 12; color: parent.hovered ? "#55415f83" : "#3a303f62"; border.color: "#788a83ad" }
                         contentItem: Text { text: parent.text; color: "#ece6ff"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 11; rightPadding: 11 } }
-                    Button { text: "Import"; onClicked: repo.importTheme(); background: Rectangle { radius: 13; color: parent.hovered ? "#30445d79" : "#25303e59"; border.color: "#5e687f9b" }
+                    Button { text: "Import"; onClicked: repo.importTheme(); background: Rectangle { radius: 12; color: parent.hovered ? "#30445d79" : "#25303e59"; border.color: "#5e687f9b" }
                         contentItem: Text { text: parent.text; color: "#d1d9e9"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 12; rightPadding: 12 } }
-                    Button { text: "Export"; enabled: visibleCount > 0; onClicked: repo.exportPreset(); background: Rectangle { radius: 13; color: parent.hovered ? "#30445d79" : "#25303e59"; border.color: "#5e687f9b" }
+                    Button { text: "Export"; enabled: visibleCount > 0; onClicked: repo.exportPreset(); background: Rectangle { radius: 12; color: parent.hovered ? "#30445d79" : "#25303e59"; border.color: "#5e687f9b" }
                         contentItem: Text { text: parent.text; color: "#d1d9e9"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 12; rightPadding: 12 } }
                 }
                 ListView {
@@ -391,16 +377,16 @@ ApplicationWindow {
                                 Text { text: modelData.builtin ? "Bundled preset" : "Custom preset"; color: "#9aa5bb"; font.pixelSize: 10 }
                             }
                             Button { text: "Select"; onClicked: { repo.selected = index; page = "gallery" }
-                                background: Rectangle { radius: 10; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
+                                background: Rectangle { radius: 12; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
                                 contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8 } }
                             Button { text: "Duplicate"; onClicked: { repo.selected = index; repo.duplicateSelected(); edit = clone(repo.draft); page = "editor" }
-                                background: Rectangle { radius: 10; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
+                                background: Rectangle { radius: 12; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
                                 contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8 } }
                             Button { text: modelData.builtin ? "Edit copy" : "Edit"; onClicked: { repo.selected = index; win.beginEdit() }
-                                background: Rectangle { radius: 10; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
+                                background: Rectangle { radius: 12; color: parent.hovered ? "#3e4c6880" : "#2432475d"; border.color: "#50617a98" }
                                 contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8 } }
                             Button { text: "Delete"; enabled: !modelData.builtin; onClicked: { repo.selected = index; repo.deleteSelected() }
-                                background: Rectangle { radius: 10; color: parent.hovered ? "#563a415b" : "#322b293a"; border.color: "#685d4665" }
+                                background: Rectangle { radius: 12; color: parent.hovered ? "#563a415b" : "#322b293a"; border.color: "#685d4665" }
                                 contentItem: Text { text: parent.text; color: parent.enabled ? "#e3b4c0" : "#827b89"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8 } }
                         }
                     }
@@ -415,16 +401,16 @@ ApplicationWindow {
                 RowLayout {
                     Layout.fillWidth: true
                     Button { text: "‹  Gallery"; onClicked: { pendingPage = "gallery"; win.cancelEdit() }
-                        background: Rectangle { radius: 11; color: parent.hovered ? "#31425c78" : "#24303e59" }
+                        background: Rectangle { radius: 12; color: parent.hovered ? "#31425c78" : "#24303e59" }
                         contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 11; rightPadding: 11 } }
                     Item { Layout.fillWidth: true }
                     Text { text: "CUSTOM THEME EDITOR"; color: "#b0bad0"; font.pixelSize: 10; font.letterSpacing: 1.8 }
                     Item { Layout.fillWidth: true }
-                    Button { text: "Cancel"; onClicked: win.cancelEdit(); background: Rectangle { radius: 11; color: parent.hovered ? "#31425c78" : "#24303e59" }
+                    Button { text: "Cancel"; onClicked: win.cancelEdit(); background: Rectangle { radius: 12; color: parent.hovered ? "#31425c78" : "#24303e59" }
                         contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 12; rightPadding: 12 } }
                     Button { text: "Save preset"; onClicked: repo.saveDraft(edit)
                         background: Rectangle {
-                            radius: 11
+                            radius: 12
                             gradient: Gradient {
                                 GradientStop { position: 0; color: parent.hovered ? "#9a78fa" : "#765bd2" }
                                 GradientStop { position: 1; color: parent.hovered ? "#56a9e9" : "#397dbb" }
@@ -453,10 +439,10 @@ ApplicationWindow {
                                     Text { text: modelData; color: "#cbd3e2"; font.pixelSize: 11; Layout.fillWidth: true }
                                     Rectangle { width: 18; height: 18; radius: 9; color: win.color(modelData); border.color: "#98ffffff" }
                                     TextField { Layout.preferredWidth: 94; height: 30; text: win.color(modelData); onTextEdited: win.setColor(modelData, text); validator: RegularExpressionValidator { regularExpression: /^#[0-9A-Fa-f]{6}$/ }
-                                        background: Rectangle { radius: 8; color: "#aa111b2e"; border.color: "#566b829f" }
+                                        background: Rectangle { radius: 12; color: "#aa111b2e"; border.color: "#566b829f" }
                                         color: "#e1e5ee"; font.pixelSize: 11; leftPadding: 8; selectionColor: "#7c65c5" }
                                     Button { text: "◉"; width: 31; height: 30; padding: 0; onClicked: { picker.targetKey = modelData; picker.currentColor = win.color(modelData); picker.open() }
-                                        background: Rectangle { radius: 8; color: parent.hovered ? "#48506b88" : "#29364964"; border.color: "#596e879f" }
+                                        background: Rectangle { radius: 12; color: parent.hovered ? "#48506b88" : "#29364964"; border.color: "#596e879f" }
                                         contentItem: Text { text: parent.text; color: "#e3ddff"; font.pixelSize: 15; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter } }
                                 }
                             }
@@ -500,21 +486,29 @@ ApplicationWindow {
                 Item { Layout.fillWidth: true }
                 Button {
                     text: "Preview"; enabled: visibleCount > 0
-                    onClicked: toast.message = "In-app preview is already shown in the gallery."
-                    background: Rectangle { radius: 14; color: parent.hovered ? "#354a6283" : "#28344867"; border.color: "#66738ca8" }
+                    onClicked: previewDialog.open()
+                    background: Rectangle { radius: 12; color: parent.hovered ? "#354a6283" : "#28344867"; border.color: "#66738ca8" }
                     contentItem: Text { text: parent.text; color: "#e0e5f0"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 19; rightPadding: 19 }
                 }
                 Button {
-                    text: "Apply"; enabled: false
-                    background: Rectangle { radius: 14; color: "#262d3d55"; border.color: "#47566e88" }
-                    contentItem: Text { text: parent.text; color: "#8b98af"; font.pixelSize: 12; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
-                    ToolTip.visible: hovered; ToolTip.text: "Desktop theme application is not implemented."
+                    text: "Apply"; enabled: visibleCount > 0 && repo.integrations.length > 0 && repo.integrations[0].success
+                    onClicked: applyDialog.open()
+                    background: Rectangle { radius: 12; color: parent.enabled ? (parent.hovered ? "#45546f91" : "#35445f7e") : "#262d3d55"; border.color: parent.enabled ? "#7786a5c2" : "#47566e88" }
+                    contentItem: Text { text: parent.text; color: parent.enabled ? "#e2e9f7" : "#8b98af"; font.pixelSize: 12; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
+                    ToolTip.visible: hovered; ToolTip.text: "Apply supported Alacritty colors. Other integrations are listed as unsupported."
+                }
+                Button {
+                    visible: repo.hasRestorePoint
+                    text: "Restore Previous Theme"
+                    onClicked: restoreDialog.open()
+                    background: Rectangle { radius: 12; color: parent.hovered ? "#4b394961" : "#2c34475f"; border.color: "#687b91aa" }
+                    contentItem: Text { text: parent.text; color: "#d1daeb"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8; elide: Text.ElideRight }
                 }
                 Button {
                     text: "Customize"; enabled: visibleCount > 0
                     onClicked: win.beginEdit()
                     background: Rectangle {
-                        radius: 14
+                        radius: 12
                         gradient: Gradient {
                             GradientStop { position: 0; color: parent.hovered ? "#a284ff" : "#8064db" }
                             GradientStop { position: 1; color: parent.hovered ? "#68b8f2" : "#428ac5" }
@@ -529,6 +523,85 @@ ApplicationWindow {
     }
 
     Dialog {
+        id: previewDialog
+        modal: true
+        anchors.centerIn: Overlay.overlay
+        title: "Theme preview"
+        standardButtons: Dialog.Close
+        background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
+        contentItem: ColumnLayout {
+            spacing: 12
+            Text { text: visibleCount ? repo.themes[repo.selected].name : "No preset selected"; color: "#f1f2f8"; font.pixelSize: 19; font.weight: Font.DemiBold }
+            Text { text: visibleCount ? repo.themes[repo.selected].description : ""; color: "#c3cada"; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.preferredWidth: 360 }
+            Row { spacing: 8; Repeater { model: visibleCount ? [repo.themes[repo.selected].palette.background, repo.themes[repo.selected].palette.surface, repo.themes[repo.selected].palette.accent, repo.themes[repo.selected].palette.secondary, repo.themes[repo.selected].palette.tertiary] : []; delegate: Rectangle { required property string modelData; width: 30; height: 30; radius: 15; color: modelData; border.color: "#8cffffff" } } }
+            Text { text: "Preview only. No desktop settings change until you confirm Apply."; color: "#9eabc2"; font.pixelSize: 11 }
+        }
+    }
+    Dialog {
+        id: applyDialog
+        modal: true
+        anchors.centerIn: Overlay.overlay
+        title: "Apply supported theme settings?"
+        standardButtons: Dialog.NoButton
+        background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
+        contentItem: ColumnLayout {
+            spacing: 11
+            Text { text: "Aurora Studio will update Alacritty's color sections. A byte-for-byte backup is kept for Restore Previous Theme. Changes take effect in new terminal windows."; color: "#dce3f0"; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.preferredWidth: 390 }
+            Repeater {
+                model: repo.integrations
+                delegate: Text {
+                    required property var modelData
+                    Layout.fillWidth: true
+                    text: (modelData.supported ? "✓ " : "— ") + modelData.name + ": " + modelData.message
+                    color: modelData.supported ? "#cce5d7" : "#9ea9bd"
+                    font.pixelSize: 11; wrapMode: Text.WordWrap
+                }
+            }
+            RowLayout {
+                Item { Layout.fillWidth: true }
+                Button {
+                    text: "Cancel"
+                    onClicked: applyDialog.close()
+                    background: Rectangle { radius: 12; color: "#30435f7a" }
+                    contentItem: Text { text: parent.text; color: "#dce2ef"; font.pixelSize: 12; leftPadding: 13; rightPadding: 13; horizontalAlignment: Text.AlignHCenter }
+                }
+                Button {
+                    text: "Apply"
+                    onClicked: { applyDialog.close(); repo.applySelectedTheme() }
+                    background: Rectangle { radius: 12; color: "#765fba"; border.color: "#a291aee3" }
+                    contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; font.weight: Font.DemiBold; leftPadding: 15; rightPadding: 15; horizontalAlignment: Text.AlignHCenter }
+                }
+            }
+        }
+    }
+    Dialog {
+        id: restoreDialog
+        modal: true
+        anchors.centerIn: Overlay.overlay
+        title: "Restore previous configuration?"
+        standardButtons: Dialog.NoButton
+        background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
+        contentItem: ColumnLayout {
+            spacing: 12
+            Text { text: "Restore the saved Alacritty configuration from before Aurora Studio's first Apply?"; color: "#dce3f0"; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.preferredWidth: 350 }
+            RowLayout {
+                Item { Layout.fillWidth: true }
+                Button {
+                    text: "Cancel"
+                    onClicked: restoreDialog.close()
+                    background: Rectangle { radius: 12; color: "#30435f7a" }
+                    contentItem: Text { text: parent.text; color: "#dce2ef"; font.pixelSize: 12; leftPadding: 13; rightPadding: 13; horizontalAlignment: Text.AlignHCenter }
+                }
+                Button {
+                    text: "Restore"
+                    onClicked: { restoreDialog.close(); repo.restorePreviousTheme() }
+                    background: Rectangle { radius: 12; color: "#76566eaa" }
+                    contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; leftPadding: 15; rightPadding: 15; horizontalAlignment: Text.AlignHCenter }
+                }
+            }
+        }
+    }
+    Dialog {
         id: discardDialog
         modal: true
         anchors.centerIn: Overlay.overlay
@@ -541,10 +614,10 @@ ApplicationWindow {
             RowLayout {
                 Item { Layout.fillWidth: true }
                 Button { text: "Keep editing"; onClicked: { discardDialog.close(); pendingPage = ""; pendingClose = false }
-                    background: Rectangle { radius: 10; color: "#30435f7a"; border.color: "#5d6d86a3" }
+                    background: Rectangle { radius: 12; color: "#30435f7a"; border.color: "#5d6d86a3" }
                     contentItem: Text { text: parent.text; color: "#dce2ef"; font.pixelSize: 12; leftPadding: 12; rightPadding: 12; horizontalAlignment: Text.AlignHCenter } }
                 Button { text: "Discard"; onClicked: { win.discardEdit(); if (pendingClose) { pendingClose = false; win.close() } else if (pendingPage !== "") { win.page = pendingPage; pendingPage = "" } }
-                    background: Rectangle { radius: 10; color: "#76566eaa"; border.color: "#a291aee3" }
+                    background: Rectangle { radius: 12; color: "#76566eaa"; border.color: "#a291aee3" }
                     contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; leftPadding: 12; rightPadding: 12; horizontalAlignment: Text.AlignHCenter } }
             }
         }

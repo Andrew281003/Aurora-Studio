@@ -1,4 +1,5 @@
 #include "theme.h"
+#include "theme_application.h"
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -14,7 +15,8 @@ static QVariantMap readTheme(const QString &path) {
     auto doc=QJsonDocument::fromJson(f.readAll()); if (!doc.isObject()) return {};
     auto m=doc.object().toVariantMap(); m["path"]=path; return m;
 }
-ThemeRepository::ThemeRepository(QObject *p):QObject(p) { reload(); }
+ThemeRepository::ThemeRepository(QObject *p):QObject(p),m_application(new ThemeApplication) { reload(); }
+ThemeRepository::~ThemeRepository(){delete m_application;}
 QString ThemeRepository::userDir() const { return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+"/themes"; }
 void ThemeRepository::reload() {
     m_themes.clear(); QDir bundled(AURORA_THEME_DIR);
@@ -53,4 +55,16 @@ bool ThemeRepository::importFile(const QString&p){auto t=readTheme(p);QString er
 void ThemeRepository::exportPreset(){if(m_themes.isEmpty())return;QString p=QFileDialog::getSaveFileName(nullptr,"Export Aurora preset",m_themes[m_selected].toMap().value("id").toString()+".json","Aurora theme (*.json)");if(!p.isEmpty())exportFile(p);}
 bool ThemeRepository::exportFile(const QString&p){if(m_themes.isEmpty())return false;auto t=m_themes[m_selected].toMap();t.remove("path");t.remove("builtin");QSaveFile f(p);if(!f.open(QIODevice::WriteOnly)||f.write(QJsonDocument::fromVariant(t).toJson(QJsonDocument::Indented))<0||!f.commit()){emit notice("Could not export preset");return false;}emit notice("Preset exported");return true;}
 void ThemeRepository::exportSelected(){exportPreset();}
-void ThemeRepository::applySelected(){emit notice("Desktop integration is outside this standalone milestone");}
+void ThemeRepository::applySelected(){applySelectedTheme();}
+QVariantList ThemeRepository::applySelectedTheme(){
+    if(m_themes.isEmpty())return {};
+    auto outcomes=m_application->apply(m_themes[m_selected].toMap());
+    for(const auto &item:outcomes){auto result=item.toMap();emit notice(result.value("message").toString());}
+    emit applicationStateChanged();
+    return outcomes;
+}
+bool ThemeRepository::restorePreviousTheme(){
+    QString message;bool ok=m_application->restore(&message);emit notice(message);emit applicationStateChanged();return ok;
+}
+QVariantList ThemeRepository::integrationStatus()const{return m_application->status();}
+bool ThemeRepository::hasRestorePoint()const{return m_application->hasRestorePoint();}

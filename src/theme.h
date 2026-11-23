@@ -3,18 +3,27 @@
 #include <QVariantList>
 #include <QVariantMap>
 
+class ThemeApplication;
+
 class ThemeRepository : public QObject {
     Q_OBJECT
     Q_PROPERTY(QVariantList themes READ themes NOTIFY themesChanged)
     Q_PROPERTY(int selected READ selected WRITE setSelected NOTIFY selectedChanged)
     Q_PROPERTY(QVariantMap draft READ draft NOTIFY draftChanged)
     Q_PROPERTY(bool editing READ editing NOTIFY draftChanged)
+    Q_PROPERTY(bool hasRestorePoint READ hasRestorePoint NOTIFY applicationStateChanged)
+    Q_PROPERTY(QVariantList integrations READ integrationStatus NOTIFY applicationStateChanged)
 public:
     explicit ThemeRepository(QObject *parent = nullptr);
+    ~ThemeRepository() override;
     QVariantList themes() const;
     int selected() const { return m_selected; }
     void setSelected(int value);
     Q_INVOKABLE void applySelected();
+    Q_INVOKABLE QVariantList applySelectedTheme();
+    Q_INVOKABLE bool restorePreviousTheme();
+    Q_INVOKABLE QVariantList integrationStatus() const;
+    bool hasRestorePoint() const;
     Q_INVOKABLE void exportSelected();
     Q_INVOKABLE void createTheme();
     QVariantMap draft() const { return m_draft; }
@@ -33,12 +42,14 @@ signals:
     void selectedChanged();
     void notice(QString message);
     void draftChanged();
+    void applicationStateChanged();
 private:
     QVariantList m_themes;
     int m_selected = 0;
     QVariantMap m_draft;
     QString m_editingId;
     bool m_editing = false;
+    ThemeApplication *m_application = nullptr;
     bool validate(const QVariantMap &theme, QString *error) const;
     void reload();
     QString userDir() const;
