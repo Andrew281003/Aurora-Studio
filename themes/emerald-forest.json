@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "emerald-forest",
+  "name": "Emerald Forest",
+  "description": "Deep green with a quiet sage glow.",
+  "palette": {
+    "background": "#111b18",
+    "surface": "#263b31",
+    "accent": "#83d6a1",
+    "secondary": "#83d6a1",
+    "tertiary": "#83d6a1",
+    "text": "#e5f2ea",
+    "muted": "#e5f2ea",
+    "border": "#263b31",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/emerald-forest.svg",
+  "preview": "../assets/emerald-forest-portrait.jpg",
+  "terminal": {
+    "background": "#111b18",
+    "foreground": "#e5f2ea",
+    "cursor": "#83d6a1",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

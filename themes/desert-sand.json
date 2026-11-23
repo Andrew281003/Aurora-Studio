@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "desert-sand",
+  "name": "Desert Sand",
+  "description": "Warm stone, sand and amber.",
+  "palette": {
+    "background": "#211c16",
+    "surface": "#44372a",
+    "accent": "#e5ad59",
+    "secondary": "#e5ad59",
+    "tertiary": "#e5ad59",
+    "text": "#f8f0e2",
+    "muted": "#f8f0e2",
+    "border": "#44372a",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/desert-sand.svg",
+  "preview": "../assets/desert-sand-portrait.jpg",
+  "terminal": {
+    "background": "#211c16",
+    "foreground": "#f8f0e2",
+    "cursor": "#e5ad59",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "neon-tokyo",
+  "name": "Neon Tokyo",
+  "description": "Electric color after dark.",
+  "palette": {
+    "background": "#160f24",
+    "surface": "#302044",
+    "accent": "#ff4fd8",
+    "secondary": "#ff4fd8",
+    "tertiary": "#ff4fd8",
+    "text": "#f4eaff",
+    "muted": "#f4eaff",
+    "border": "#302044",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/neon-tokyo.svg",
+  "preview": "../assets/neon-tokyo-portrait.jpg",
+  "terminal": {
+    "background": "#160f24",
+    "foreground": "#f4eaff",
+    "cursor": "#ff4fd8",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

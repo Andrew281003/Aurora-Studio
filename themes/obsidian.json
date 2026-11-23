@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "obsidian",
+  "name": "Obsidian",
+  "description": "Graphite surfaces and restrained silver.",
+  "palette": {
+    "background": "#111214",
+    "surface": "#30343a",
+    "accent": "#bac4d0",
+    "secondary": "#bac4d0",
+    "tertiary": "#bac4d0",
+    "text": "#eceef1",
+    "muted": "#eceef1",
+    "border": "#30343a",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/obsidian.svg",
+  "preview": "../assets/obsidian-portrait.jpg",
+  "terminal": {
+    "background": "#111214",
+    "foreground": "#eceef1",
+    "cursor": "#bac4d0",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

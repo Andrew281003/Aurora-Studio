@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Aurora Studio
+Comment=Browse and edit Aurora color presets
+Exec=aurora-studio
+Icon=preferences-desktop-theme
+Categories=Settings;DesktopSettings;
+StartupWMClass=aurora-studio

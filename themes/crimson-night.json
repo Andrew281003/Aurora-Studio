@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "crimson-night",
+  "name": "Crimson Night",
+  "description": "Crimson highlights on charcoal.",
+  "palette": {
+    "background": "#191216",
+    "surface": "#382129",
+    "accent": "#ff5572",
+    "secondary": "#ff5572",
+    "tertiary": "#ff5572",
+    "text": "#f5e9ed",
+    "muted": "#f5e9ed",
+    "border": "#382129",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/crimson-night.svg",
+  "preview": "../assets/crimson-night-portrait.jpg",
+  "terminal": {
+    "background": "#191216",
+    "foreground": "#f5e9ed",
+    "cursor": "#ff5572",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

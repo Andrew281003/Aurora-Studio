@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "midnight-aurora",
+  "name": "Midnight Aurora",
+  "description": "Navy, cyan and violet under an aurora sky.",
+  "palette": {
+    "background": "#101421",
+    "surface": "#393453",
+    "accent": "#b4a7ff",
+    "secondary": "#b4a7ff",
+    "tertiary": "#b4a7ff",
+    "text": "#e6e8f2",
+    "muted": "#e6e8f2",
+    "border": "#393453",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/midnight-aurora.svg",
+  "preview": "../assets/midnight-aurora-portrait.jpg",
+  "terminal": {
+    "background": "#101421",
+    "foreground": "#e6e8f2",
+    "cursor": "#b4a7ff",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

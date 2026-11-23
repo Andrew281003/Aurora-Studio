@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "arctic-frost",
+  "name": "Arctic Frost",
+  "description": "Cool light and glacial blue.",
+  "palette": {
+    "background": "#101a24",
+    "surface": "#233746",
+    "accent": "#72d5ff",
+    "secondary": "#72d5ff",
+    "tertiary": "#72d5ff",
+    "text": "#eaf5ff",
+    "muted": "#eaf5ff",
+    "border": "#233746",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/arctic-frost.svg",
+  "preview": "../assets/arctic-frost-portrait.jpg",
+  "terminal": {
+    "background": "#101a24",
+    "foreground": "#eaf5ff",
+    "cursor": "#72d5ff",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}

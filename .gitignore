@@ -1,0 +1,64 @@
+# CMake generated files
+/build/
+/build-*/
+/cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+compile_commands.json
+install_manifest.txt
+Testing/
+
+# Ninja and other generated build state
+.ninja_deps
+.ninja_log
+build.ninja
+rules.ninja
+*.ninja
+
+# Qt Creator and IDE-local state
+.qtcreator/
+.qtc_clangd/
+*.user
+*.user.*
+.vscode/
+.idea/
+
+# Temporary files, logs, crash dumps, and editor swaps
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*.bak
+*.orig
+core
+core.*
+*.core
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.local
+config.local.*
+secrets.*
+credentials.*
+
+# Package/build outputs and local caches
+/dist/
+/target/
+.cache/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Historical source snapshots are kept locally, not part of the app source.
+/backups/

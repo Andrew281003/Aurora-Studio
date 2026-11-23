@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "sakura-dusk",
+  "name": "Sakura Dusk",
+  "description": "Dusty petals against plum twilight.",
+  "palette": {
+    "background": "#201522",
+    "surface": "#43253f",
+    "accent": "#ed91bd",
+    "secondary": "#ed91bd",
+    "tertiary": "#ed91bd",
+    "text": "#f8eaf2",
+    "muted": "#f8eaf2",
+    "border": "#43253f",
+    "error": "#ff647c",
+    "warning": "#edb85e",
+    "success": "#79d6a2"
+  },
+  "wallpaper": "../assets/sakura-dusk.svg",
+  "preview": "../assets/sakura-dusk-portrait.jpg",
+  "terminal": {
+    "background": "#201522",
+    "foreground": "#f8eaf2",
+    "cursor": "#ed91bd",
+    "ansi": [
+      "#171b2a",
+      "#ff7291",
+      "#7fff98",
+      "#ffd972",
+      "#9c8df2",
+      "#393453",
+      "#b4a7ff",
+      "#f2efff"
+    ]
+  },
+  "integrations": {
+    "dms": "unsupported-api",
+    "hyprland": "manual-only",
+    "alacritty": "managed-include"
+  }
+}
