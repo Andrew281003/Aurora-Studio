@@ -1,0 +1,20 @@
+********* Start testing of QmlWaylandSmoke *********
+Config: Using QtTest library 6.12.0, Qt 6.12.0 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 16.2.1 20260810), arch unknown
+PASS   : QmlWaylandSmoke::initTestCase()
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+QWARN  : QmlWaylandSmoke::desktopFlows() qt.qpa.wayland.textinput: virtual void QtWaylandClient::QWaylandTextInputv3::disableSurface(wl_surface*) Trying to disable 0x5561e2fa20e0 but 0x0 is focused
+PASS   : QmlWaylandSmoke::desktopFlows()
+PASS   : QmlWaylandSmoke::cleanupTestCase()
+Totals: 3 passed, 0 failed, 0 skipped, 0 blacklisted, 1620ms
+********* Finished testing of QmlWaylandSmoke *********

@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QTemporaryDir>
 #include <QTest>
+#include <QUrl>
 
 class RepositoryTests:public QObject {
  Q_OBJECT
@@ -15,6 +16,8 @@ private slots:
  void initTestCase(){m_data=std::make_unique<QTemporaryDir>();qputenv("XDG_DATA_HOME",m_data->path().toUtf8());}
  void init(){m_data=std::make_unique<QTemporaryDir>();qputenv("XDG_DATA_HOME",m_data->path().toUtf8());}
  void galleryLoadsEight(){ThemeRepository r;QCOMPARE(r.themes().size(),8);}
+ void bundledArtworkIsEmbedded(){ThemeRepository r;QCOMPARE(r.themes().size(),8);for(const auto&entry:r.themes()){const auto theme=entry.toMap();const QString url=theme.value("previewUrl").toString();QVERIFY2(url.startsWith("qrc:/assets/"),qPrintable(url));QFile asset(":/assets/"+QFileInfo(QUrl(url).path()).fileName());QVERIFY2(asset.open(QIODevice::ReadOnly),qPrintable(url));QVERIFY(asset.readAll().startsWith(QByteArray::fromHex("ffd8ff")));QFile svg(":/assets/"+theme.value("id").toString()+".svg");QVERIFY(svg.open(QIODevice::ReadOnly));QVERIFY(svg.readAll().startsWith("<svg"));}}
+ void persistedLegacyArtworkResolves(){ThemeRepository r;auto theme=r.themes().first().toMap();theme["id"]="custom-legacy-preview";theme["name"]="Legacy preview";theme["preview"]="../assets/emerald-forest-portrait.jpg";r.saveDraft(theme);ThemeRepository restored;QCOMPARE(restored.themes().size(),9);QCOMPARE(restored.themes().last().toMap().value("previewUrl").toString(),QString("qrc:/assets/emerald-forest-portrait.jpg"));}
  void saveAndPersist(){ThemeRepository r;QCOMPARE(r.themes().size(),8);r.setSelected(0);r.createTheme();auto d=r.draft();d["name"]="Persisted Test";r.saveDraft(d);QVERIFY(!r.editing());QCOMPARE(r.themes().size(),9);ThemeRepository second;QCOMPARE(second.themes().size(),9);QCOMPARE(second.themes().last().toMap().value("name").toString(),QString("Persisted Test"));}
  void importExportRoundTrip(){ThemeRepository r;QTemporaryDir tmp;QString path=tmp.filePath("theme.json");QVERIFY(r.exportFile(path));int old=r.themes().size();QVERIFY(r.importFile(path));QCOMPARE(r.themes().size(),old+1);QCOMPARE(r.themes().last().toMap().value("name"),r.themes().first().toMap().value("name"));}
  void invalidImportRejected(){ThemeRepository r;QTemporaryDir tmp;QString path=tmp.filePath("invalid.json");QFile f(path);QVERIFY(f.open(QIODevice::WriteOnly));f.write("{\"schemaVersion\":99}");f.close();int old=r.themes().size();QVERIFY(!r.importFile(path));QCOMPARE(r.themes().size(),old);}

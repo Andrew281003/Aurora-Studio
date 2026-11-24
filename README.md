@@ -1,13 +1,13 @@
 # Aurora Studio
 
-Aurora Studio is a Qt Quick desktop theme manager for browsing and editing color presets. Its gallery presents the bundled themes as a cinematic cover-flow carousel, with portrait landscape previews and a translucent navy interface.
+Aurora Studio is a Qt Quick desktop theme manager for browsing and editing color presets. Its gallery presents the bundled themes in a layered cover-flow carousel with a translucent navy interface.
 
 ![Aurora Studio theme gallery](screenshots/aurora-studio-gallery.png)
 
 ## Features
 
 - Browse eight bundled presets with a keyboard- and mouse-driven cover-flow gallery.
-- Preview theme palettes, descriptions, and generated portrait artwork.
+- Preview theme palettes, descriptions, and bundled portrait artwork.
 - Create, duplicate, edit, and delete user presets. Bundled presets remain immutable; editing one creates a user copy.
 - Edit theme names, descriptions, and palette colors in the live editor.
 - Save user presets as JSON in the platform's application data directory.
@@ -43,19 +43,21 @@ ctest --test-dir build --output-on-failure
 ./build/aurora-studio
 ```
 
+When a Wayland desktop session is active, `./build/qml-wayland-smoke` runs the gallery and dialog flow against that session and writes screenshots under `screenshots/`. It is intentionally a separate target from CTest so headless CI does not pretend to verify a real desktop.
+
 The application can also be installed with CMake:
 
 ```sh
 cmake --install build --prefix "$HOME/.local"
 ```
 
-The current build embeds the QML interface but resolves bundled theme JSON files from the source checkout used at build time. Keep that checkout in place when using the installed launcher; relocatable theme-data installation is not implemented yet.
+The build embeds the QML interface, bundled theme definitions, and SVG artwork in Qt resources. Installed builds do not depend on the source checkout. Installing the desktop entry also lets the freedesktop portal resolve the application ID used by the Wayland session.
 
 ## Theme data and artwork
 
-Bundled preset definitions are in [`themes/`](themes/). The JSON schema contains palette values, terminal colors, descriptions, and integration metadata. User-created themes are stored under Qt's `AppDataLocation/themes` directory.
+Bundled preset definitions are in [`themes/`](themes/). The JSON schema contains palette values, terminal colors, descriptions, and integration metadata. User-created themes are stored under Qt's `AppDataLocation/themes` directory. Bundled JPEG previews and SVG wallpaper art are compiled into Qt resources. Existing persisted presets that refer to the bundled portrait files resolve to those resources.
 
-Portrait JPEG previews are in [`assets/`](assets/), alongside the original SVG wallpaper artwork referenced by the bundled presets. The preview-art provenance is documented in [`assets/README.md`](assets/README.md). Gallery previews use the JPEGs; wallpaper artwork is metadata only unless a supported wallpaper backend is added later.
+The bundled JPEG previews and SVG artwork are in [`assets/`](assets/). The preview-art provenance is documented in [`assets/README.md`](assets/README.md). Wallpaper artwork is metadata only unless a supported wallpaper backend is added later.
 
 ## Desktop integrations
 
@@ -78,7 +80,7 @@ Application state and backups are stored under Qt's `AppDataLocation` for `auror
 - Only Alacritty colors are applied. This does not change Hyprland borders, DMS widgets, wallpaper, GTK, Qt, or the whole desktop appearance.
 - The active Alacritty TOML file must exist, have parseable table headers, and have no pre-existing `import` entry (unless it is Aurora Studio's own exact import). Application currently replaces Alacritty color tables as a unit, so custom entries inside `[colors...]` tables are replaced; all non-color settings remain intact and the complete original file is restorable.
 - Aurora Studio does not reload Alacritty or restart any desktop service. New terminal windows use applied colors; existing windows may retain their current palette.
-- Installed builds are not relocatable because bundled theme data is currently referenced from the source tree.
+- Theme previews use bundled JPEG resources. Custom artwork can still be loaded from beside a persisted preset JSON file.
 - Theme import and export support Aurora's JSON format only.
 - The editor changes theme metadata and color values; it does not edit or generate artwork.
 

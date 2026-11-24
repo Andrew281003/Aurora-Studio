@@ -55,6 +55,7 @@ ApplicationWindow {
 
     ThemeRepository {
         id: repo
+        objectName: "themeRepository"
         onNotice: msg => { toast.message = msg; toastTimer.restart() }
     }
 
@@ -71,7 +72,7 @@ ApplicationWindow {
         id: surface
         anchors.fill: parent
         radius: 28
-        color: "#9910182b"
+        color: "#b810182b"
         border.width: 1
         border.color: "#526a83b9"
         clip: true
@@ -106,8 +107,8 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.leftMargin: 32
             anchors.rightMargin: 32
-            anchors.topMargin: 12
-            anchors.bottomMargin: 12
+            anchors.topMargin: 8
+            anchors.bottomMargin: 8
             spacing: 0
 
             // Header
@@ -191,24 +192,25 @@ ApplicationWindow {
                         }
                         property int distance: Math.abs(delta)
                         property bool active: delta === 0
-                        property real cardHeight: Math.max(190, Math.min(372, gallery.height - 10))
+                        property color accentColor: modelData.palette.accent
+                        property real cardHeight: Math.max(190, Math.min(405, gallery.height - 8))
                         property real cardWidth: Math.max(138, Math.min(280, gallery.width * 0.28, cardHeight * 0.75))
                         width: cardWidth
                         height: cardHeight
                         // Keep enough horizontal separation for the scaled covers' labels.
                         // The cards still overlap visually at the edges, preserving the cover-flow look.
-                        x: gallery.width / 2 - width / 2 + delta * width * 0.94
-                        y: (gallery.height - height) / 2 + distance * 9 + 4
+                        x: gallery.width / 2 - width / 2 + delta * width * 0.72
+                        y: (gallery.height - height) / 2 + distance * 7 + 2
                         z: 20 - distance
-                        scale: active ? 1.0 : (distance === 1 ? 0.83 : (distance === 2 ? 0.69 : 0.57))
-                        opacity: active ? 1.0 : (distance === 1 ? 0.82 : (distance === 2 ? 0.53 : 0.27))
-                        visible: distance <= 3
+                        scale: active ? 1.0 : (distance === 1 ? 0.86 : (distance === 2 ? 0.72 : 0.59))
+                        opacity: active ? 1.0 : (distance === 1 ? 0.88 : (distance === 2 ? 0.62 : 0.30))
+                        visible: distance <= 2
                         transformOrigin: Item.Center
                         transform: Rotation {
                             id: carouselRotation
                             origin.x: card.width / 2; origin.y: card.height / 2
                             axis.x: 0; axis.y: 1; axis.z: 0
-                            angle: Math.max(-29, Math.min(29, card.delta * -10))
+                            angle: Math.max(-32, Math.min(32, card.delta * -11))
                             Behavior on angle { NumberAnimation { duration: 420; easing.type: Easing.OutCubic } }
                         }
                         Behavior on x { NumberAnimation { duration: 420; easing.type: Easing.OutCubic } }
@@ -220,15 +222,15 @@ ApplicationWindow {
                             anchors.fill: parent
                             anchors.margins: -5
                             radius: 26
-                            color: card.active ? (card.modelData.palette.accent + "30") : "transparent"
+                            color: card.active ? Qt.rgba(card.accentColor.r, card.accentColor.g, card.accentColor.b, 0.12) : "transparent"
                             opacity: card.active ? 0.8 : 0
                             layer.enabled: card.active
                             layer.effect: MultiEffect {
                                 shadowEnabled: true
-                                shadowColor: card.modelData.palette.accent
+                                shadowColor: card.accentColor
                                 shadowBlur: 0.75
-                                shadowOpacity: 0.42
-                                shadowVerticalOffset: 2
+                                shadowOpacity: 0.30
+                                shadowVerticalOffset: 3
                             }
                         }
                         Rectangle {
@@ -236,13 +238,13 @@ ApplicationWindow {
                             radius: 23
                             color: card.modelData.palette.background
                             border.width: 1.5
-                            border.color: card.active ? "#d18f9fcf" : "#555e7292"
+                            border.color: card.active ? card.modelData.palette.accent : "#556c7f9b"
                             clip: true
 
                             Image {
                                 id: artwork
                                 anchors.fill: parent
-                                source: "file://" + card.modelData.path.substring(0, card.modelData.path.lastIndexOf("/") + 1) + card.modelData.preview
+                                source: card.modelData.previewUrl || ""
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true; cache: true
                                 opacity: card.active ? 1 : 0.92
@@ -250,7 +252,7 @@ ApplicationWindow {
                             }
                             Image {
                                 anchors.fill: parent
-                                source: visibleCount ? "file://" + repo.themes[0].path.substring(0, repo.themes[0].path.lastIndexOf("/") + 1) + repo.themes[0].preview : ""
+                                source: visibleCount ? repo.themes[0].previewUrl : ""
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true; cache: true
                                 visible: artwork.status === Image.Error
@@ -260,8 +262,8 @@ ApplicationWindow {
                                 gradient: Gradient {
                                     GradientStop { position: 0.0; color: "#12071020" }
                                     GradientStop { position: 0.42; color: "#10101a2b" }
-                                    GradientStop { position: 0.68; color: "#750b1020" }
-                                    GradientStop { position: 1.0; color: "#f00a0f1c" }
+                                    GradientStop { position: 0.62; color: "#a50b1020" }
+                                    GradientStop { position: 1.0; color: "#f20a0f1c" }
                                 }
                             }
                             Rectangle {
@@ -294,38 +296,44 @@ ApplicationWindow {
                 }
                 Button {
                     anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
-                    text: "‹"; enabled: repo.selected > 0; width: 40; height: 48; padding: 0
+                    text: "‹"; enabled: repo.selected > 0; width: 48; height: 54; padding: 0
                     onClicked: win.moveSelection(-1)
                     background: Rectangle { radius: 15; color: parent.hovered ? "#4a364864" : "#ad141c30"; border.color: "#586e86a9" }
                     contentItem: Text { text: parent.text; color: parent.enabled ? "#f1f2fc" : "#71809c"; font.pixelSize: 34; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
                 Button {
                     anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                    text: "›"; enabled: repo.selected < visibleCount - 1; width: 40; height: 48; padding: 0
+                    text: "›"; enabled: repo.selected < visibleCount - 1; width: 48; height: 54; padding: 0
                     onClicked: win.moveSelection(1)
                     background: Rectangle { radius: 15; color: parent.hovered ? "#4a364864" : "#ad141c30"; border.color: "#586e86a9" }
                     contentItem: Text { text: parent.text; color: parent.enabled ? "#f1f2fc" : "#71809c"; font.pixelSize: 34; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter }
                 }
             }
 
-            // The selected cover already carries its name, so keep the lower row focused
-            // on description, palette, and pagination rather than repeating that heading.
             ColumnLayout {
                 visible: win.page === "gallery"
                 Layout.fillWidth: true
-                Layout.preferredHeight: 69
-                spacing: 4
+                Layout.preferredHeight: 92
+                spacing: 7
+                Text {
+                    Layout.fillWidth: true
+                    text: visibleCount ? repo.themes[repo.selected].name : "Choose a preset"
+                    color: visibleCount ? repo.themes[repo.selected].palette.text : "#f2f3fa"
+                    font.pixelSize: 23; font.weight: Font.DemiBold
+                    horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
+                }
                 Text {
                     Layout.fillWidth: true
                     text: visibleCount ? repo.themes[repo.selected].description : "Create or import a preset to get started."
-                    color: "#b6bfd2"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
+                    color: visibleCount ? repo.themes[repo.selected].palette.muted : "#b6bfd2"
+                    font.pixelSize: 14; horizontalAlignment: Text.AlignHCenter; elide: Text.ElideRight
                 }
                 Row {
                     Layout.alignment: Qt.AlignHCenter
-                    spacing: 8
+                    spacing: 10
                     Repeater {
                         model: visibleCount ? [repo.themes[repo.selected].palette.accent, repo.themes[repo.selected].palette.secondary, repo.themes[repo.selected].palette.tertiary, repo.themes[repo.selected].palette.surface] : []
-                        delegate: Rectangle { required property string modelData; width: 17; height: 17; radius: 8.5; color: modelData; border.color: "#80ffffff"; border.width: 1 }
+                        delegate: Rectangle { required property string modelData; width: 20; height: 20; radius: 10; color: modelData; border.color: "#80ffffff"; border.width: 1 }
                     }
                 }
                 Row {
@@ -408,12 +416,12 @@ ApplicationWindow {
                     Item { Layout.fillWidth: true }
                     Button { text: "Cancel"; onClicked: win.cancelEdit(); background: Rectangle { radius: 12; color: parent.hovered ? "#31425c78" : "#24303e59" }
                         contentItem: Text { text: parent.text; color: "#d3dced"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 12; rightPadding: 12 } }
-                    Button { text: "Save preset"; onClicked: repo.saveDraft(edit)
+                    Button { id: savePresetButton; text: "Save preset"; onClicked: repo.saveDraft(edit)
                         background: Rectangle {
                             radius: 12
                             gradient: Gradient {
-                                GradientStop { position: 0; color: parent.hovered ? "#9a78fa" : "#765bd2" }
-                                GradientStop { position: 1; color: parent.hovered ? "#56a9e9" : "#397dbb" }
+                                GradientStop { position: 0; color: savePresetButton.hovered ? "#9a78fa" : "#765bd2" }
+                                GradientStop { position: 1; color: savePresetButton.hovered ? "#56a9e9" : "#397dbb" }
                             }
                         }
                         contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 13; rightPadding: 13 } }
@@ -482,19 +490,21 @@ ApplicationWindow {
             // Gallery actions remain grouped and centered.
             RowLayout {
                 visible: win.page === "gallery"
-                Layout.fillWidth: true; Layout.preferredHeight: 46; spacing: 10
+                Layout.fillWidth: true; Layout.preferredHeight: 58; spacing: 14
                 Item { Layout.fillWidth: true }
                 Button {
                     text: "Preview"; enabled: visibleCount > 0
                     onClicked: previewDialog.open()
-                    background: Rectangle { radius: 12; color: parent.hovered ? "#354a6283" : "#28344867"; border.color: "#66738ca8" }
-                    contentItem: Text { text: parent.text; color: "#e0e5f0"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 19; rightPadding: 19 }
+                    height: 48; padding: 18
+                    background: Rectangle { radius: 14; color: parent.hovered ? "#574a6283" : "#49344867"; border.color: "#7c829bb8" }
+                    contentItem: Text { text: parent.text; color: "#e0e5f0"; font.pixelSize: 14; font.weight: Font.Medium; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 19; rightPadding: 19 }
                 }
                 Button {
                     text: "Apply"; enabled: visibleCount > 0 && repo.integrations.length > 0 && repo.integrations[0].success
                     onClicked: applyDialog.open()
                     background: Rectangle { radius: 12; color: parent.enabled ? (parent.hovered ? "#45546f91" : "#35445f7e") : "#262d3d55"; border.color: parent.enabled ? "#7786a5c2" : "#47566e88" }
-                    contentItem: Text { text: parent.text; color: parent.enabled ? "#e2e9f7" : "#8b98af"; font.pixelSize: 12; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
+                    height: 48; padding: 18
+                    contentItem: Text { text: parent.text; color: parent.enabled ? "#e2e9f7" : "#8b98af"; font.pixelSize: 14; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
                     ToolTip.visible: hovered; ToolTip.text: "Apply supported Alacritty colors. Other integrations are listed as unsupported."
                 }
                 Button {
@@ -502,20 +512,23 @@ ApplicationWindow {
                     text: "Restore Previous Theme"
                     onClicked: restoreDialog.open()
                     background: Rectangle { radius: 12; color: parent.hovered ? "#4b394961" : "#2c34475f"; border.color: "#687b91aa" }
-                    contentItem: Text { text: parent.text; color: "#d1daeb"; font.pixelSize: 11; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8; elide: Text.ElideRight }
+                    height: 48; padding: 14
+                    contentItem: Text { text: parent.text; color: "#d1daeb"; font.pixelSize: 13; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 8; rightPadding: 8; elide: Text.ElideRight }
                 }
                 Button {
+                    id: customizeButton
                     text: "Customize"; enabled: visibleCount > 0
                     onClicked: win.beginEdit()
                     background: Rectangle {
                         radius: 12
                         gradient: Gradient {
-                            GradientStop { position: 0; color: parent.hovered ? "#a284ff" : "#8064db" }
-                            GradientStop { position: 1; color: parent.hovered ? "#68b8f2" : "#428ac5" }
+                            GradientStop { position: 0; color: customizeButton.hovered ? "#a284ff" : "#8064db" }
+                            GradientStop { position: 1; color: customizeButton.hovered ? "#68b8f2" : "#428ac5" }
                         }
                         border.color: "#b6c4ecff"
                     }
-                    contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
+                    height: 48; padding: 18
+                    contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 14; font.weight: Font.DemiBold; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 24; rightPadding: 24 }
                 }
                 Item { Layout.fillWidth: true }
             }
@@ -524,10 +537,16 @@ ApplicationWindow {
 
     Dialog {
         id: previewDialog
+        objectName: "previewDialog"
+        width: 440
         modal: true
         anchors.centerIn: Overlay.overlay
-        title: "Theme preview"
-        standardButtons: Dialog.Close
+        standardButtons: Dialog.NoButton
+        header: Rectangle {
+            implicitHeight: 42; color: "#d91d2942"
+            Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: "Theme preview"; color: "#f0f3fb"; font.pixelSize: 14; font.weight: Font.DemiBold }
+        }
+        footer: Rectangle { implicitHeight: 0; color: "transparent" }
         background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
         contentItem: ColumnLayout {
             spacing: 12
@@ -535,14 +554,30 @@ ApplicationWindow {
             Text { text: visibleCount ? repo.themes[repo.selected].description : ""; color: "#c3cada"; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.preferredWidth: 360 }
             Row { spacing: 8; Repeater { model: visibleCount ? [repo.themes[repo.selected].palette.background, repo.themes[repo.selected].palette.surface, repo.themes[repo.selected].palette.accent, repo.themes[repo.selected].palette.secondary, repo.themes[repo.selected].palette.tertiary] : []; delegate: Rectangle { required property string modelData; width: 30; height: 30; radius: 15; color: modelData; border.color: "#8cffffff" } } }
             Text { text: "Preview only. No desktop settings change until you confirm Apply."; color: "#9eabc2"; font.pixelSize: 11 }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button {
+                    objectName: "previewCloseButton"
+                    text: "Close"; onClicked: previewDialog.close()
+                    background: Rectangle { radius: 11; color: parent.hovered ? "#42536d8c" : "#30435f7a"; border.color: "#687f9cb5" }
+                    contentItem: Text { text: parent.text; color: "#e0e7f4"; font.pixelSize: 12; horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter; leftPadding: 14; rightPadding: 14 }
+                }
+            }
         }
     }
     Dialog {
         id: applyDialog
+        objectName: "applyDialog"
+        width: 500
         modal: true
         anchors.centerIn: Overlay.overlay
-        title: "Apply supported theme settings?"
         standardButtons: Dialog.NoButton
+        header: Rectangle {
+            implicitHeight: 42; color: "#d91d2942"
+            Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: "Apply supported theme settings?"; color: "#f0f3fb"; font.pixelSize: 14; font.weight: Font.DemiBold }
+        }
+        footer: Rectangle { implicitHeight: 0; color: "transparent" }
         background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
         contentItem: ColumnLayout {
             spacing: 11
@@ -560,6 +595,7 @@ ApplicationWindow {
             RowLayout {
                 Item { Layout.fillWidth: true }
                 Button {
+                    objectName: "applyCancelButton"
                     text: "Cancel"
                     onClicked: applyDialog.close()
                     background: Rectangle { radius: 12; color: "#30435f7a" }
@@ -576,10 +612,16 @@ ApplicationWindow {
     }
     Dialog {
         id: restoreDialog
+        objectName: "restoreDialog"
+        width: 440
         modal: true
         anchors.centerIn: Overlay.overlay
-        title: "Restore previous configuration?"
         standardButtons: Dialog.NoButton
+        header: Rectangle {
+            implicitHeight: 42; color: "#d91d2942"
+            Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: "Restore previous configuration?"; color: "#f0f3fb"; font.pixelSize: 14; font.weight: Font.DemiBold }
+        }
+        footer: Rectangle { implicitHeight: 0; color: "transparent" }
         background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
         contentItem: ColumnLayout {
             spacing: 12
@@ -603,20 +645,26 @@ ApplicationWindow {
     }
     Dialog {
         id: discardDialog
+        objectName: "discardDialog"
+        width: 460
         modal: true
         anchors.centerIn: Overlay.overlay
-        title: "Discard unsaved changes?"
         standardButtons: Dialog.NoButton
+        header: Rectangle {
+            implicitHeight: 42; color: "#d91d2942"
+            Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: "Discard unsaved changes?"; color: "#f0f3fb"; font.pixelSize: 14; font.weight: Font.DemiBold }
+        }
+        footer: Rectangle { implicitHeight: 0; color: "transparent" }
         background: Rectangle { radius: 18; color: "#f21a2438"; border.color: "#8092a8c9" }
         contentItem: ColumnLayout {
             spacing: 14
             Text { text: "Your editor changes have not been saved."; color: "#e0e5f0"; font.pixelSize: 13 }
             RowLayout {
                 Item { Layout.fillWidth: true }
-                Button { text: "Keep editing"; onClicked: { discardDialog.close(); pendingPage = ""; pendingClose = false }
+                Button { objectName: "discardKeepButton"; text: "Keep editing"; onClicked: { discardDialog.close(); pendingPage = ""; pendingClose = false }
                     background: Rectangle { radius: 12; color: "#30435f7a"; border.color: "#5d6d86a3" }
                     contentItem: Text { text: parent.text; color: "#dce2ef"; font.pixelSize: 12; leftPadding: 12; rightPadding: 12; horizontalAlignment: Text.AlignHCenter } }
-                Button { text: "Discard"; onClicked: { win.discardEdit(); if (pendingClose) { pendingClose = false; win.close() } else if (pendingPage !== "") { win.page = pendingPage; pendingPage = "" } }
+                Button { objectName: "discardButton"; text: "Discard"; onClicked: { win.discardEdit(); if (pendingClose) { pendingClose = false; win.close() } else if (pendingPage !== "") { win.page = pendingPage; pendingPage = "" } }
                     background: Rectangle { radius: 12; color: "#76566eaa"; border.color: "#a291aee3" }
                     contentItem: Text { text: parent.text; color: "white"; font.pixelSize: 12; leftPadding: 12; rightPadding: 12; horizontalAlignment: Text.AlignHCenter } }
             }
