@@ -25,6 +25,10 @@ QString defaultDataRoot()
 bool atomicWrite(const QString &path, const QByteArray &bytes, QString *error)
 {
     const QFileInfo info(path);
+    if (info.isSymLink()) {
+        if (error) *error = "Refusing to atomically replace a symbolic link";
+        return false;
+    }
     if (!QDir().mkpath(info.absolutePath())) {
         if (error) *error = "Could not create the destination directory";
         return false;
@@ -223,7 +227,8 @@ bool ThemeApplication::recoverInterrupted()
     if (journal.value("configPath").toString() != expectedConfig
         || journal.value("includePath").toString() != expectedInclude
         || rollback != transactionBackupPath() || !journal.value("existed").toBool()
-        || !QFileInfo::exists(rollback)) return false;
+        || !QFileInfo::exists(rollback) || QFileInfo(expectedConfig).isSymLink()
+        || QFileInfo(expectedInclude).isSymLink() || QFileInfo(rollback).isSymLink()) return false;
     QFile backup(rollback);
     if (!backup.open(QIODevice::ReadOnly)) return false;
     const QByteArray configBytes = backup.readAll();
@@ -311,10 +316,10 @@ QVariantList ThemeApplication::apply(const QVariantMap &theme)
         return {result("Alacritty", true, false, false, "Configuration rejected: " + error)};
     QFile existingInclude(includePath);
     const bool includeExisted = existingInclude.exists();
+    if (QFileInfo(includePath).isSymLink())
+        return {result("Alacritty", true, false, false, "The Aurora Studio include path is a symbolic link; refusing to replace it")};
     QByteArray priorInclude;
     if (includeExisted) {
-        if (QFileInfo(includePath).isSymLink())
-            return {result("Alacritty", true, false, false, "The Aurora Studio include path is a symbolic link; refusing to replace it")};
         if (!existingInclude.open(QIODevice::ReadOnly)) return {result("Alacritty", true, false, false, "Could not inspect the managed color include")};
         priorInclude = existingInclude.readAll();
         if (!priorInclude.contains("Managed by Aurora Studio"))
@@ -404,6 +409,10 @@ bool ThemeApplication::restore(QString *message)
     }
     QFile activeConfig(journal.value("configPath").toString());
     QFile activeInclude(journal.value("includePath").toString());
+    if (QFileInfo(activeConfig.fileName()).isSymLink() || QFileInfo(activeInclude.fileName()).isSymLink()) {
+        if (message) *message = "An Alacritty file became a symbolic link after Apply; restore was stopped to preserve it.";
+        return false;
+    }
     if (!activeConfig.open(QIODevice::ReadOnly) || !activeInclude.open(QIODevice::ReadOnly)
         || sha256(activeConfig.readAll()) != journal.value("configSha256").toString()
         || sha256(activeInclude.readAll()) != journal.value("includeSha256").toString()) {
@@ -414,6 +423,10 @@ bool ThemeApplication::restore(QString *message)
         if (message) *message = "The previous configuration backup is missing.";
         return false;
     }
+    if (QFileInfo(backupPath()).isSymLink()) {
+        if (message) *message = "The previous configuration backup is a symbolic link; restore was stopped.";
+        return false;
+    }
     QFile backup(backupPath());
     if (!backup.open(QIODevice::ReadOnly)) {
         if (message) *message = "Could not read the previous configuration backup.";
@@ -422,7 +435,12 @@ bool ThemeApplication::restore(QString *message)
     const QByteArray expected = backup.readAll();
     QByteArray previousInclude;
     if (journal.value("baselineIncludeExisted").toBool()) {
-        QFile includeBackup(m_dataRoot + "/previous-alacritty-colors.toml");
+        const QString includeBackupPath = m_dataRoot + "/previous-alacritty-colors.toml";
+        if (QFileInfo(includeBackupPath).isSymLink()) {
+            if (message) *message = "The previous color include backup is a symbolic link; restore was stopped.";
+            return false;
+        }
+        QFile includeBackup(includeBackupPath);
         if (!includeBackup.open(QIODevice::ReadOnly)) {
             if (message) *message = "The previous color include backup is missing.";
             return false;
